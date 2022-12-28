@@ -2,7 +2,7 @@ body {
     background-image: url("images/bg1.jpg");
     background-repeat: no-repeat;
     background-position: center;
-    background-size: cover;
+    background-size: cover; 
     background-attachment: fixed;
     font-family: 'Source Sans Pro', Arial, sans-serif;
 }
@@ -311,12 +311,7 @@ div#modalBody {
 
 @media screen and (max-width: 480px) {
     body {
-        background-image: url("images/bg1.jpg");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-        background-attachment: scroll;
-        font-family: 'Source Sans Pro', Arial, sans-serif;
+        background-image: url("images/bg2.jpg");
     }
 
     #cover {
