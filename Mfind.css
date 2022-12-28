@@ -310,6 +310,15 @@ div#modalBody {
 }
 
 @media screen and (max-width: 480px) {
+    body {
+        background-image: url("images/bg2.jpg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        background-attachment: scroll;
+        font-family: 'Source Sans Pro', Arial, sans-serif;
+    }
+
     #cover {
         width: 450px;
         padding: 7px;
