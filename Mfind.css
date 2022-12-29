@@ -2,7 +2,7 @@ body {
     background-image: url("images/bg1.jpg");
     background-repeat: no-repeat;
     background-position: center;
-    background-size: cover; 
+    background-size: cover;
     background-attachment: fixed;
     font-family: 'Source Sans Pro', Arial, sans-serif;
 }
@@ -215,7 +215,7 @@ div.movie_card img {
 }
 
 div.movie_card img:hover {
-    width: 220px; 
+    width: 220px;
 }
 
 p.reldate {
@@ -227,7 +227,7 @@ p.reldate {
 }
 
 div.movie_card p {
-    margin: 0px  !important;
+    margin: 0px !important;
 }
 
 .t1 {
@@ -272,6 +272,16 @@ div.movie_row1 div {
     margin-bottom: 4px;
 }
 
+div.movie_row2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+div.movie_row2 * {
+    margin: 10px;
+}
+
 .hidden {
     display: none;
 }
@@ -286,12 +296,14 @@ div.movie_row1 div {
     cursor: pointer;
     display: inline-block;
     font-weight: 800;
+    width: 50%;
     outline: 0;
     text-align: center;
     text-rendering: geometricprecision;
     text-transform: none;
     height: 30px;
     margin-bottom: 3px;
+    padding: 5px;
 }
 
 .button-24:hover,
@@ -308,6 +320,28 @@ div.movie_row1 div {
 div#modalBody {
     background-image: linear-gradient(to right, #decba490, #3e515181);
 }
+
+
+table {
+    overflow: auto;
+}
+
+th,
+td {
+    border: 3px groove rgba(0, 0, 0, 0.39) !important;
+    border-radius: 5px !important;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: center;
+}
+
+td:hover {
+    background-image: linear-gradient(to right, #d29f3890, #398a8a81);
+}
+
+
 
 @media screen and (max-width: 480px) {
     body {
@@ -349,6 +383,6 @@ div#modalBody {
     }
 
     div.movie_card img:hover {
-        width: 240px; 
+        width: 240px;
     }
 }
