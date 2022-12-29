@@ -1,7 +1,13 @@
-let main_var = "Y"
+        /* Program - FindTheMovie */
+        /* Author - Samanth Annaiah */
+        /* Release Date - 28 December 2022  */
+        /* Version - version-3 */
+        /*  Using the publicly available TMDB API, we have implemented a simple straight forward movie search application.
+        Find information about your favorite movie  and enjoy!!
+        - As soon as the app is opened the  top 20 trending movies will be displayed.
+        - Next, once we search for a movie, all the available movies that have  that keyword in their title will be displayed.*/
 let sub_api = 0
 let page_count = 19
-var frombutton = 0
 let searchapiurl = " "
 
 let keysearch_1 = document.getElementById("keysearch")
@@ -93,13 +99,24 @@ mainProcess()
 async function mainProcess() {
     mdata = ""
     mdata_rt = []
+    /* Below is the API URL to pull the top 20 trending movies in the world*/
     let pinurl = "https://api.themoviedb.org/3/discover/movie?api_key=047b539e360a4ef948b20ca485f87ce8&&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_watch_monetization_types=flatrate"
     fetch(pinurl)
         .then(response => response.json())
         .then(data => {
+            /* mdata will store the records of trending movies */ 
             mdata = data
             return data;
         })
+        /* Each record from the data.results array is read to get the unique movie-id. Using the 
+           movie-id we will then read another end-point to get more details of that corresponding movie.
+                - Now, the API should be read as many times as the number of movie-ids. Hence we need to iterate through the 
+                movie-ids.
+                - The iteration is achieved using array.map 
+                - Using Promise.all and async-await we make sure to wait until all the fetch promises of the api read are 
+                fulfilled. 
+                - We need to use async-await because we need all the data to be read completely from the APIs to proceed
+                further. */
         .then(async data => {
             await Promise.all(data.results.map((e, index, array) => {
                 let apiurl = "https://api.themoviedb.org/3/movie/" + e.id + "?api_key=047b539e360a4ef948b20ca485f87ce8"
@@ -110,6 +127,7 @@ async function mainProcess() {
                             ...e,
                             ...data
                         };
+                         /* mdata_rt will store the additional information of records on trending movies */ 
                         mdata_rt[index] = data
                     })
             }));
@@ -125,48 +143,53 @@ function postProcess(mdata, mdata_rt) {
     let mcontent = mdata.results
     if (mcontent.length == 0) {
         window.alert("Movie(s) not found")
-        return 
+        return
     }
     let movie_data = document.getElementById("info_data")
     movie_data.innerHTML = ""
 
+    /* Iterate through all the records obtained from API and populate them in the corresponding 
+    html element(s)*/
     for (let k = 0; k < mcontent.length; k++) {
         movie.movie_init
 
+        /* Exit if the movie poster is not found */
         let temp_img = mcontent[k].poster_path
         if (!temp_img) {
-            continue 
+            continue
         }
 
         let movie_card = document.createElement("div")
         movie_card.classList.add("movie_card")
         movie_card.innerHTML = ""
 
+        /* Loading the genre color into the card background.*/
         movie.movie_genre = mcontent[k].genre_ids[0]
         let tmgn = movie.movie_genre
         let movie_ccolor = ""
         if (!tmgn) {
-            movie_card.style.backgroundColor = "#C39B" 
+            movie_card.style.backgroundColor = "#C39B"
             movie_ccolor = "#C39B"
-        }else {
+        } else {
             movie_card.style.backgroundColor = movie.movie_genre_color(movie.movie_genre)
             movie_ccolor = movie.movie_genre_color(movie.movie_genre)
         }
         movie_card.style.boxShadow = movie_ccolor + " 0px 5px 10px 2px"
 
+        /* Loading the movie poster */
         movie.movie_image = document.createElement("img")
         temp_img = ""
         temp_img = mimg + mcontent[k].poster_path
         movie.movie_image.src = temp_img
         movie_card.appendChild(movie.movie_image)
 
+        /* Loading the release date of the movie */
         movie.movie_rel = document.createElement("p")
         movie.movie_rel.classList.add("reldate")
         let temp_rel = mcontent[k].release_date
         if (temp_rel) {
             movie.movie_rel.textContent = movie.movie_rel_date(temp_rel)
-        }
-        else {
+        } else {
             movie.movie_rel.textContent = "NA/TBA"
         }
         movie_card.appendChild(movie.movie_rel)
@@ -174,52 +197,59 @@ function postProcess(mdata, mdata_rt) {
         let movie_row1 = document.createElement("div")
         movie_row1.classList.add("movie_row1")
 
+        /* Loading the run-time of the movie */
         let movie_rt = document.createElement("div")
         movie_rt.classList.add("t1")
         movie_rt.textContent = mdata_rt[k].runtime + "mins"
         movie_row1.appendChild(movie_rt)
 
+        /* Loading the movie rating */
         let movie_rt1 = document.createElement("div")
         movie_rt1.classList.add("t1")
         movie_rt1.classList.add("r1")
         movie.movie_rating = mcontent[k].vote_average
-        let mr_num = Number(movie.movie_rating) 
-        mr_num = mr_num.toFixed(1) 
-        movie.movie_rating = mr_num 
+        let mr_num = Number(movie.movie_rating)
+        mr_num = mr_num.toFixed(1)
+        movie.movie_rating = mr_num
         movie_rt1.textContent = movie.movie_rating
         movie_row1.appendChild(movie_rt1)
 
         movie_card.appendChild(movie_row1)
 
+        /* Loading the movie language  */
         movie.movie_lang = document.createElement("p")
         movie.movie_lang.classList.add("t1")
         let temp_lan = mdata_rt[k].original_language
-        let languageNames = new Intl.DisplayNames(['en'], {type: 'language'});
+        let languageNames = new Intl.DisplayNames(['en'], {
+            type: 'language'
+        });
         let lang_name = languageNames.of(temp_lan.trim());
-        movie.movie_lang.textContent = lang_name 
+        movie.movie_lang.textContent = lang_name
         movie_card.appendChild(movie.movie_lang)
 
         let movie_row2 = document.createElement("div")
         movie_row2.classList.add("movie_row1")
 
+        /* Loading the movie title and tag line  */
         let movie_rt3 = document.createElement("div")
         movie_rt3.classList.add("hidden")
         let full_title = ""
         if (mdata_rt[k].tagline) {
-            full_title = mdata_rt[k].original_title + " : " + mdata_rt[k].tagline  
+            full_title = mdata_rt[k].original_title + " : " + mdata_rt[k].tagline
         } else {
-            full_title = mdata_rt[k].original_title 
+            full_title = mdata_rt[k].original_title
         }
-        movie_rt3.textContent = full_title 
+        movie_rt3.textContent = full_title
         movie_row2.appendChild(movie_rt3)
-        
+
+        /* Button which when clicked displays the overview/plot of the movie */
         let movie_ovr = document.createElement("button")
         movie_ovr.classList.add("button-24")
-        movie_ovr.setAttribute("role","button") 
+        movie_ovr.setAttribute("role", "button")
         // movie_ovr.addEventListener("click", getOvr)
-        movie_ovr.addEventListener('click', function(e) {
+        movie_ovr.addEventListener('click', function (e) {
             var target = e.target
-            console.log(target) 
+            console.log(target)
             getOvr(target)
         }, false);
         movie_ovr.textContent = "Overview"
@@ -227,7 +257,7 @@ function postProcess(mdata, mdata_rt) {
 
         let movie_rt2 = document.createElement("div")
         movie_rt2.classList.add("hidden")
-        movie_rt2.textContent = mdata_rt[k].overview 
+        movie_rt2.textContent = mdata_rt[k].overview
         movie_row2.appendChild(movie_rt2)
 
         movie_card.appendChild(movie_row2)
@@ -237,29 +267,31 @@ function postProcess(mdata, mdata_rt) {
 }
 
 function getOvr(tgt) {
+    /* The MODAL feature of Bootstrap is used to display the  movie-title and overview information, in a pop-up window */
     let overview = tgt.nextSibling.textContent
-    let titlem = tgt.previousSibling.textContent 
+    let titlem = tgt.previousSibling.textContent
     overview = overview.trim()
-    let mtitle = document.getElementById("modalTitle") 
-    mtitle.textContent = titlem 
+    let mtitle = document.getElementById("modalTitle")
+    mtitle.textContent = titlem
     mtitle.classList.add("mtitle")
     let mbody = document.getElementById("modalBody")
     mbody.textContent = ""
-    mbody.textContent = overview 
+    mbody.textContent = overview
     mbody.classList.add("t1")
     var myModal = new bootstrap.Modal(document.getElementById("modalOvr"));
     myModal.show();
 }
 
+/* Once the user enters a keyword of the movie to search the below function will be executed  */
 async function searchkey() {
 
     mdata = ""
     mdata_rt = []
-    frombutton = 1
     searchapiurl = " "
     let keyword_inp = document.getElementById("keyword")
     let keyword = keyword_inp.value
     keyword = keyword.trim()
+    /* Below API url uses the keyword to search for the movie*/
     let apiurlstart = "https://api.themoviedb.org/3/search/movie?api_key=047b539e360a4ef948b20ca485f87ce8&query="
     let apiparam = "&page=1&include_adult=false"
     searchapiurl = apiurlstart + keyword + apiparam
@@ -270,6 +302,8 @@ async function searchkey() {
             return data;
         })
         .then(async data => {
+            /* Like previously, the data obtained from the previous search is then looped for the movie-id
+            and then further information is obtained using the array.map, promise.all, async-await*/
             await Promise.all(data.results.map((e, index, array) => {
                 let apiurl = "https://api.themoviedb.org/3/movie/" + e.id + "?api_key=047b539e360a4ef948b20ca485f87ce8"
                 return fetch(apiurl)

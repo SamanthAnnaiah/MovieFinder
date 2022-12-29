@@ -197,7 +197,7 @@ button span:after {
 }
 
 div.movie_card {
-    width: 23%;
+    width: 24%;
     border-radius: 15px;
     border: 0px groove rgb(56, 55, 55);
     display: flex;
@@ -227,7 +227,7 @@ p.reldate {
 }
 
 div.movie_card p {
-    margin: 0px;
+    margin: 0px  !important;
 }
 
 .t1 {
@@ -345,6 +345,10 @@ div#modalBody {
     }
 
     div.movie_card {
-        width: 80%;
+        width: 90%;
+    }
+
+    div.movie_card img:hover {
+        width: 240px; 
     }
 }
