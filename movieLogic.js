@@ -160,7 +160,6 @@
                 /* Exit if the movie poster is not found */
                 let temp_img = mcontent[k].poster_path
                 if (!temp_img) {
-                    window.alert("**Movie(s) not found**")
                     continue
                 }
 
