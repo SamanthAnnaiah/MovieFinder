@@ -7,7 +7,7 @@
         - As soon as the app is opened the  top 20 trending movies will be displayed.
         - Next, once we search for a movie, all the available movies that have  that keyword in their title will be displayed.*/
         let sub_api = 0
-        let ccount = 4 
+        let ccount = 4
         let page_count = 19
         let searchapiurl = " "
 
@@ -160,6 +160,7 @@
                 /* Exit if the movie poster is not found */
                 let temp_img = mcontent[k].poster_path
                 if (!temp_img) {
+                    window.alert("**Movie(s) not found**")
                     continue
                 }
 
@@ -332,6 +333,7 @@
             mtitle.classList.add("mtitle")
 
             let ccdata = document.createElement("table")
+            let ccdata1 = document.createElement("table")
 
             let ptr1 = document.createElement("tr")
             let ptd1 = document.createElement("td")
@@ -339,32 +341,50 @@
             ptd1.classList.add("text-center")
             ptd1.textContent = "CAST"
             ptr1.appendChild(ptd1)
+            ccdata.appendChild(ptr1)
+
+            let ptr2 = document.createElement("tr")
             let ptd2 = document.createElement("td")
             ptd2.classList.add("bg-success")
             ptd2.classList.add("text-center")
             ptd2.textContent = "CREW"
-            ptr1.appendChild(ptd2)
-            ccdata.appendChild(ptr1)
+            ptr2.appendChild(ptd2)
+            ccdata1.appendChild(ptr2)
 
             for (let k = 0; k <= ccount; k++) {
                 let ptr = document.createElement("tr")
                 if (data.cast[k]) {
                     let ptd1 = document.createElement("td")
-                    ptd1.textContent = data.cast[k].name 
-                    ptr.appendChild(ptd1)    
+                    ptd1.textContent = data.cast[k].name
+                    ptr.appendChild(ptd1)
                 }
+                ccdata.appendChild(ptr)
+            }
+
+            for (let k = 0; k <= ccount; k++) {
+                let ptr = document.createElement("tr")
                 if (data.crew[k]) {
                     let ptd2 = document.createElement("td")
-                    ptd2.textContent = data.crew[k].name + "," + " " + data.crew[k].job 
+                    let sp1 = document.createElement("span")
+                    sp1.classList.add("t2")
+                    sp1.textContent = data.crew[k].job + " " + "-" + " "
+                    let sp2 = document.createElement("span")
+                    sp2.textContent = data.crew[k].name
+                    ptd2.appendChild(sp1)
+                    ptd2.appendChild(sp2)
                     ptr.appendChild(ptd2)
                 }
-
-                ccdata.appendChild(ptr)   
+                ccdata1.appendChild(ptr)
             }
 
             let mbody = document.getElementById("modalBody")
             mbody.innerHTML = ""
-            mbody.appendChild(ccdata)
+            let ccdata_div = document.createElement("div")
+            ccdata_div.appendChild(ccdata)
+            let ccdata_div1 = document.createElement("div")
+            ccdata_div1.appendChild(ccdata1)
+            mbody.appendChild(ccdata_div)
+            mbody.appendChild(ccdata_div1)
             mbody.classList.add("t1")
             var myModal = new bootstrap.Modal(document.getElementById("modalOvr"));
             myModal.show();

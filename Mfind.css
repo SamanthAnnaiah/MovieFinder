@@ -235,6 +235,11 @@ div.movie_card p {
     font-weight: 900;
     text-shadow: 0 0 2px #f1e508, 0 0 3px #13ea45;
 }
+.t2 {
+    padding: 4px;
+    font-weight: 900;
+    text-shadow: 0 0 1px #111001a4, 0 0 2px #13ea45;
+}
 
 #modalTitle {
     background: #f64c46a6;
@@ -339,6 +344,15 @@ th {
 
 td:hover {
     background-image: linear-gradient(to right, #d29f3890, #398a8a81);
+}
+#modalBody {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow: auto;
+}
+#modalBody div {
+    margin: 10px;
 }
 
 
