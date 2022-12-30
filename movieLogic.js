@@ -10,6 +10,8 @@
         let ccount = 4
         let page_count = 19
         let searchapiurl = " "
+        const dop = "Director of Photography"
+        const omc = "Original Music Composer"
 
         let keysearch_1 = document.getElementById("keysearch")
         keysearch_1.addEventListener("click", searchkey)
@@ -367,6 +369,12 @@
                     let sp1 = document.createElement("span")
                     sp1.classList.add("t2")
                     sp1.textContent = data.crew[k].job + " " + "-" + " "
+                    if (data.crew[k].job.trim() == dop) {
+                        sp1.textContent = "DOP" + " " + "-" + " "  
+                    }
+                    if (data.crew[k].job.trim() == omc) {
+                        sp1.textContent = "Original Music" + " " + "-" + " "  
+                    }
                     let sp2 = document.createElement("span")
                     sp2.textContent = data.crew[k].name
                     ptd2.appendChild(sp1)
