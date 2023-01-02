@@ -2,6 +2,7 @@
         /* Author - Samanth Annaiah */
         /* Initial Release Date - 28 December 2022  */
         /* Version - version-4, 30 December 2022*/
+        /* Version - version-5, 02 January 2022*/
         /*  Using the publicly available TMDB API, we have implemented a simple straight forward movie search application.
         Find information about your favorite movie  and enjoy!!
         - As soon as the app is opened the  top 20 trending movies will be displayed.
@@ -102,6 +103,7 @@
         async function mainProcess() {
             mdata = ""
             mdata_rt = []
+            mdata_vd = []
             /* Below is the API URL to pull the top 20 trending movies in the world*/
             let pinurl = "https://api.themoviedb.org/3/discover/movie?api_key=047b539e360a4ef948b20ca485f87ce8&&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_watch_monetization_types=flatrate"
             fetch(pinurl)
@@ -120,20 +122,24 @@
                         fulfilled. 
                         - We need to use async-await because we need all the data to be read completely from the APIs to proceed
                         further. */
+                // .then(async data => {
+                // await Promise.all(data.results.map((e, index, array) => {
+                //     let vurl = "https://api.themoviedb.org/3/movie/" + e.id + "/videos?api_key=047b539e360a4ef948b20ca485f87ce8"
+                //     let apiurl = "https://api.themoviedb.org/3/movie/" + e.id + "?api_key=047b539e360a4ef948b20ca485f87ce8"
+                //     return fetch(apiurl)
+                //         .then(response => response.json())
+                //         .then(data => {
+                //             array[index] = {
+                //                 ...e,
+                //                 ...data
+                //             };
+                //             /* mdata_rt will store the additional information of records on trending movies */
+                //             mdata_rt[index] = data
+                //         })
+                // }));
+                // dataProcess()
                 .then(async data => {
-                    await Promise.all(data.results.map((e, index, array) => {
-                        let apiurl = "https://api.themoviedb.org/3/movie/" + e.id + "?api_key=047b539e360a4ef948b20ca485f87ce8"
-                        return fetch(apiurl)
-                            .then(response => response.json())
-                            .then(data => {
-                                array[index] = {
-                                    ...e,
-                                    ...data
-                                };
-                                /* mdata_rt will store the additional information of records on trending movies */
-                                mdata_rt[index] = data
-                            })
-                    }));
+                    await Promise.all(data.results.map(getccr))
                     dataProcess()
                 })
                 .catch((error) => {
@@ -141,11 +147,41 @@
                 });
         }
 
-        function dataProcess() {
-            postProcess(mdata, mdata_rt)
+        function getccr(e, index, array) {
+            let apiurl = "https://api.themoviedb.org/3/movie/" + e.id + "?api_key=047b539e360a4ef948b20ca485f87ce8"
+            return fetch(apiurl)
+                .then(response => response.json())
+                .then(data => {
+                    mdata_rt[index] = data
+                })
+                .then(async data => {
+                    /* mdata_rt will store the additional information of records on trending movies */
+                    await Promise.all(mdata_rt.map(getVideo))
+                    // console.log('ccr',mdata_rt[index])
+                })
         }
 
-        function postProcess(mdata, mdata_rt) {
+        function getVideo(e, index, array) {
+            let vurl = "https://api.themoviedb.org/3/movie/" + e.id + "/videos?api_key=047b539e360a4ef948b20ca485f87ce8"
+            return fetch(vurl)
+                .then(response => response.json())
+                .then(data => {
+                    array[index] = {
+                        ...e,
+                        ...data
+                    };
+                    /* mdata_rt will store the additional information of records on trending movies */
+                    mdata_vd[index] = data
+                    // console.log('video', mdata_vd[index])
+                })
+        }
+
+
+        function dataProcess() {
+            postProcess(mdata, mdata_rt, mdata_vd)
+        }
+
+        function postProcess(mdata, mdata_rt, mdata_vd) {
             let mcontent = mdata.results
             if (mcontent.length == 0) {
                 window.alert("Movie(s) not found")
@@ -156,6 +192,17 @@
 
             /* Iterate through all the records obtained from API and populate them in the corresponding 
             html element(s)*/
+            // for (let j = 0; j < mdata_vd.length; j++) {
+            //     let mvd = mdata_vd[j].results
+            //     let len = mdata_vd[j].results.length
+            //     for (let r = 0; r < len; r++) {
+            //         if ((mvd[r].type == "Trailer") || (mvd[r].type == "Official trailer")) {
+            //             console.log(mvd[r].name + " " + mvd[r].type)
+            //             console.log('video-link', "https://www.youtube.com/watch?v=" + mvd[r].key)
+            //             break
+            //         }
+            //     }
+            // }
             for (let k = 0; k < mcontent.length; k++) {
                 movie.movie_init
 
@@ -286,9 +333,49 @@
 
                 movie_card.appendChild(movie_row2)
 
+                let mvd = mdata_vd[k].results
+                let len = mdata_vd[k].results.length
+                let vurl = ""
+                for (let r = 0; r < len; r++) {
+                    if (((mvd[r].type == "Trailer") || (mvd[r].type == "Official trailer")) || (len == 1)) {
+                        console.log(mvd[r].name + " " + mvd[r].type)
+                        vurl = "https://www.youtube.com/watch?v=" + mvd[r].key
+                        break
+                    }
+                }
+                if (len != 0) {
+                    let movie_row3 = document.createElement('div')
+                    movie_row3.classList.add("movie_row3")
+                    movie_row3.classList.add("t2")
+                    let adata = document.createElement('a')
+                    adata.setAttribute("href", vurl)
+                    adata.setAttribute("target", "_blank")
+                    let youtubelogo = "images/ytlogo.svg"
+                    let idata = document.createElement('img')
+                    idata.setAttribute("src", youtubelogo)
+                    idata.setAttribute("height", "70")
+                    idata.setAttribute("width", "100")
+                    adata.appendChild(idata)
+                    movie_row3.appendChild(adata)
+                    movie_card.appendChild(movie_row3)
+                }
+                // getVideo(k) 
                 movie_data.appendChild(movie_card)
             }
         }
+
+        // function getVideo(ck) {
+        //     let vid_obj = mdata_vd[ck]
+        //     let vid = vid_obj.results
+        //     if (vid.length > 0) {
+        //         for (let k = 0; k < vid.length; k++) {
+        //             if (vid.type.search(/Trailer/i) || vid.type.search(/Official+trailer/i)) {
+        //                 console.log('video-link', "https://www.youtube.com/watch?v=" + vid.type)
+        //                 break
+        //             }
+        //         }
+        //     }
+        // }
 
         function getOvr(tgt) {
             /* The MODAL feature of Bootstrap is used to display the  movie-title and overview information, in a pop-up window */
@@ -370,10 +457,10 @@
                     sp1.classList.add("t2")
                     sp1.textContent = data.crew[k].job + " " + "-" + " "
                     if (data.crew[k].job.trim() == dop) {
-                        sp1.textContent = "DOP" + " " + "-" + " "  
+                        sp1.textContent = "DOP" + " " + "-" + " "
                     }
                     if (data.crew[k].job.trim() == omc) {
-                        sp1.textContent = "Original Music" + " " + "-" + " "  
+                        sp1.textContent = "Original Music" + " " + "-" + " "
                     }
                     let sp2 = document.createElement("span")
                     sp2.textContent = data.crew[k].name
@@ -402,6 +489,7 @@
 
             mdata = ""
             mdata_rt = []
+            mdata_vd = []
             searchapiurl = " "
             let keyword_inp = document.getElementById("keyword")
             let keyword = keyword_inp.value
@@ -416,22 +504,29 @@
                     mdata = data
                     return data;
                 })
+                // .then(async data => {
+                /* Like previously, the data obtained from the previous search is then looped for the movie-id
+                and then further information is obtained using the array.map, promise.all, async-await*/
+                // await Promise.all(data.results.map((e, index, array) => {
+                //     let apiurl = "https://api.themoviedb.org/3/movie/" + e.id + "?api_key=047b539e360a4ef948b20ca485f87ce8"
+                //     return fetch(apiurl)
+                //         .then(response => response.json())
+                //         .then(data => {
+                //             array[index] = {
+                //                 ...e,
+                //                 ...data
+                //             };
+                //             mdata_rt[index] = data
+                //         })
+                // }));
                 .then(async data => {
-                    /* Like previously, the data obtained from the previous search is then looped for the movie-id
-                    and then further information is obtained using the array.map, promise.all, async-await*/
-                    await Promise.all(data.results.map((e, index, array) => {
-                        let apiurl = "https://api.themoviedb.org/3/movie/" + e.id + "?api_key=047b539e360a4ef948b20ca485f87ce8"
-                        return fetch(apiurl)
-                            .then(response => response.json())
-                            .then(data => {
-                                array[index] = {
-                                    ...e,
-                                    ...data
-                                };
-                                mdata_rt[index] = data
-                            })
-                    }));
-
+                    await Promise.all(data.results.map(getccr))
                     dataProcess()
+                })
+                .catch((error) => {
+                    window.alert('Invalid response ' + error, error);
                 });
+
+            // dataProcess()
+            // });
         }
