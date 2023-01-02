@@ -1,5 +1,5 @@
 body {
-    background-image: url("images/bg1.jpg");
+    background-image: url("images/bg3.jpg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -283,7 +283,13 @@ div.movie_row2 {
     justify-content: space-between;
 }
 
-div.movie_row2 * {
+div.movie_row3 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+div.movie_row2 *, div.movie_row3 * {
     margin: 10px;
 }
 
